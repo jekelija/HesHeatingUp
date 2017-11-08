@@ -1,0 +1,32 @@
+{
+  "name": "hes-heating-up",
+  "version": "1.0.0",
+  "description": "Service to alert you when a particular player is going bonkers, and you need to turn on the TV",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jekelija/HesHeatingUp.git"
+  },
+  "keywords": [
+    "nba",
+    "basketball"
+  ],
+  "author": "Jon Jekeli and Adam Simpson",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/jekelija/HesHeatingUp/issues"
+  },
+  "homepage": "https://github.com/jekelija/HesHeatingUp#readme",
+  "devDependencies": {
+    "nodemon": "^1.12.1"
+  },
+  "dependencies": {
+    "express": "^4.16.2",
+    "mongoose": "^4.13.0",
+    "request": "^2.83.0"
+  }
+}
