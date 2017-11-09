@@ -2,10 +2,45 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+
+// mongoose instance connection url connection
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost/onFireDb'); 
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+var routes = require('./api/routes/onFireRoutes'); //importing route
+routes(app); //register the route
+
 app.listen(port);
 
 const request = require('request');
 
+//make sure NBA league is set up
+const League = require('./api/models/league');
+League.findOne({ leagueName: 'NBA'}, (err, league)=> {
+    if(err) {
+        console.error('league find error: ' + err);
+    }
+    else {
+        if(!league) {
+            const insert = new League();
+            insert.save(function(err, task) {
+                if (err) {
+                    console.error('error saving league');
+                }
+                else {
+                    console.log('saved league');
+                }
+            });
+        }
+    }
+});
+
+//set up polling
 const pollGame = (url)=> {
     request(url, function (error, response, body) {
         if(error) {
@@ -35,7 +70,6 @@ const pollNba = ()=> {
             const games = responseJson.gs.g;
             for(let i = 0; i < games.length; ++i) {
                 //TODO set teams in DB, set them to playing/not playing, figure out where in response it designates if game has started
-                //TODO cant just set interval, otherwise we compound. need to store in DB
                 const url = baseGameUrlPrefix + games[i].gid + baseGameUrlSuffix;
                 pollGame(url);
             }
@@ -46,6 +80,6 @@ const pollNba = ()=> {
     
 };
 
-setInterval(pollNba, 15000); //poll every 15 seconds
+setInterval(pollNba, 5000); //poll every 5 seconds
 
 console.log('todo list RESTful API server started on: ' + port);
