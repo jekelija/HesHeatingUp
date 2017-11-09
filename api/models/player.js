@@ -7,6 +7,10 @@ const PlayerSchema = new Schema({
         type: String,
         required: 'Kindly enter the name of the player'
     },
+    teamID : {
+        type: Schema.ObjectId,
+        required: 'Kindly enter the id of the team this player is on'
+    },
     points: {
         type: Number,
         default: 0

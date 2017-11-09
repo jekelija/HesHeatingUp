@@ -3,10 +3,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const TeamSchema = new Schema({
-    name: {
-        type: String,
-        required: 'Kindly enter the name of the team'
-    },
     abbreviation: {
         type: String,
         required: 'Kindly enter the abbreviation of the team'

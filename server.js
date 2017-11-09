@@ -9,6 +9,12 @@ const bodyParser = require('body-parser');
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/onFireDb'); 
 
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  // we're connected!
+});
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -81,5 +87,3 @@ const pollNba = ()=> {
 };
 
 setInterval(pollNba, 5000); //poll every 5 seconds
-
-console.log('todo list RESTful API server started on: ' + port);
