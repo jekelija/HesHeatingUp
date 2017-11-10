@@ -3,9 +3,15 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const TeamSchema = new Schema({
+    teamID: {
+        type: String,
+        required: 'Enter team id',
+        tags: { type: [String], index: true }
+    },
     abbreviation: {
         type: String,
-        required: 'Kindly enter the abbreviation of the team'
+        required: 'Kindly enter the abbreviation of the team',
+        tags: { type: [String], index: true }
     },
     status: {
         type: [{
@@ -15,5 +21,7 @@ const TeamSchema = new Schema({
         default: ['not playing']
     }
 });
+
+TeamSchema.set('autoIndex', false);
 
 module.exports = mongoose.model('Team', TeamSchema);

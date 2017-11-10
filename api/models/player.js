@@ -7,9 +7,14 @@ const PlayerSchema = new Schema({
         type: String,
         required: 'Kindly enter the name of the player'
     },
-    teamID : {
+    playerID: {
+        type: String,
+        required: 'Enter player id',
+        tags: { type: [String], index: true }
+    },
+    teamObjectID : {
         type: Schema.ObjectId,
-        required: 'Kindly enter the id of the team this player is on'
+        required: 'Kindly enter the mongoose id of the team this player is on'
     },
     points: {
         type: Number,

@@ -15,8 +15,28 @@ db.once('open', function() {
   // we're connected!
 });
 
+function logErrors (err, req, res, next) {
+  console.error(err.stack)
+  next(err)
+}
+function clientErrorHandler (err, req, res, next) {
+    if (req.xhr) {
+        res.status(500).send({ error: 'Something failed!' });
+    } else {
+        next(err);
+    }
+}
+function errorHandler (err, req, res, next) {
+    res.status(500);
+    res.send('error', { error: err });
+}
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use(logErrors);
+app.use(clientErrorHandler);
+app.use(errorHandler);
 
 var routes = require('./api/routes/onFireRoutes'); //importing route
 routes(app); //register the route
@@ -54,7 +74,7 @@ const pollGame = (url)=> {
             console.error('statusCode:', response && response.statusCode); // Print the response status code if a response was received
         }
         else {
-            console.log(body);
+//            console.log(body);
         }
     });
 };
