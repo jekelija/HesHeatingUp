@@ -5,6 +5,9 @@ const port = process.env.PORT || 3000;
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
+const League = require('./api/models/league');
+const Game = require('./api/models/game');
+
 // mongoose instance connection url connection
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/onFireDb'); 
@@ -46,7 +49,6 @@ app.listen(port);
 const request = require('request');
 
 //make sure NBA league is set up
-const League = require('./api/models/league');
 League.findOne({ leagueName: 'NBA'}, (err, league)=> {
     if(err) {
         console.error('league find error: ' + err);
@@ -66,6 +68,12 @@ League.findOne({ leagueName: 'NBA'}, (err, league)=> {
     }
 });
 
+const logPlayerStats = (game, team)=> {
+    for(let i = 0; i < team.pstsg.length; ++i) {
+                
+    }
+};
+
 //set up polling
 const pollGame = (url)=> {
     request(url, function (error, response, body) {
@@ -74,7 +82,41 @@ const pollGame = (url)=> {
             console.error('statusCode:', response && response.statusCode); // Print the response status code if a response was received
         }
         else {
-//            console.log(body);
+            const jsonBody = JSON.parse(body);
+            
+            //does this game already exist?
+            Game.find({gameId: jsonBody.g.gid}, (err, game)=> {
+                if(err) {
+                    console.error(err);
+                }
+                else if(!game) {
+                    //new game needs to be created
+                    const newGame = new Game({
+                        gameId : json.g.gid,
+                        gameDate : json.g.gid,
+                        
+                        
+                        //TODO look up teams
+                    });
+                    newGame.save(function(err, task) {
+                        if (err) {
+                            console.error('error saving game');
+                        }
+                        else {
+                            console.log('saved game');
+                            logPlayerStats(newGame, jsonBody.g.vls);
+                            logPlayerStats(newGame, jsonBody.g.hls);
+                        }
+                    });
+                }
+                else {
+                    logPlayerStats(game, jsonBody.g.vls);
+                    logPlayerStats(game, jsonBody.g.hls);
+                }
+            });
+            
+            
+            
         }
     });
 };

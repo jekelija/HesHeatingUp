@@ -1,64 +1,54 @@
 'use strict';
 const mongoose = require('mongoose');
-const Team = require('./team');
+const Game = require('./game');
 const Schema = mongoose.Schema;
 
-const GameSchema = new Schema({
+const PlayerGame = new Schema({
     gameId: {
-        type: String,
-        required : 'Game ID',
-        tags: { type: [String], index: true }
-    },
-    gameDate : {
-        type: Date,
-        required: 'Data required'
-    },
-    homeTeam: {
         type: Schema.ObjectId,
         ref: 'Team',
-        required: 'Kindly enter a team'
+        required: 'Kindly enter a game'
     },
-    awayTeam: {
-        type: Schema.ObjectId,
-        ref: 'Team',
-        required: 'Kindly enter a team'
-    },
-    currentPeriod: {
+    q1_points: {
         type: Number,
         default: 0
     },
-    homeQ1: {
+    q2_points: {
         type: Number,
         default: 0
     },
-    homeQ2: {
+    q3_points: {
         type: Number,
         default: 0
     },
-    homeQ3: {
+    q4_points: {
         type: Number,
         default: 0
     },
-    homeQ4: {
+    q1_tpm: {
         type: Number,
         default: 0
     },
-    awayQ1: {
+    q2_tpm: {
         type: Number,
         default: 0
     },
-    awayQ2: {
+    q3_tpm: {
         type: Number,
         default: 0
     },
-    awayQ3: {
+    q4_tpm: {
         type: Number,
         default: 0
     },
-    awayQ4: {
+    total_points: {
+        type: Number,
+        default: 0
+    },
+    total_tpm: {
         type: Number,
         default: 0
     }
 });
 
-module.exports = mongoose.model('Game', GameSchema);
+module.exports = mongoose.model('PlayerGame', PlayerGame);
