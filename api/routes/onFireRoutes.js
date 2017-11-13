@@ -5,4 +5,7 @@ module.exports = function(app) {
     .post(controller.updateTeams);
     app.route('/updateRosters')
     .post(controller.updateRosters);
+    app.route('/updateGames')
+    .post(controller.updateGames)
+    .delete(controller.deleteGames);
 };

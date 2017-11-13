@@ -29,4 +29,6 @@ const PlayerSchema = new Schema({
     }
 });
 
+PlayerSchema.set('autoIndex', false);
+
 module.exports = mongoose.model('Player', PlayerSchema);
