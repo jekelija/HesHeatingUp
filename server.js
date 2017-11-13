@@ -106,7 +106,7 @@ const logPlayerStats = (game, team)=> {
                         if(existingPG.currentPeriod == game.currentPeriod) {
                             existingPG.currentPeriod = game.currentPeriod;
                             update = true;
-                        } 
+                        }
                         
                         let key = 'q' + existingPG.currentPeriod;
                         if(existingPG.currentPeriod > 4) {
