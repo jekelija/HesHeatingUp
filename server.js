@@ -103,17 +103,47 @@ const logPlayerStats = (game, team)=> {
                     else {
                         //need to compute stats
                         let update = false;
-                        if(existingPG.currentPeriod == game.currentPeriod) {
+                        if(existingPG.currentPeriod != game.currentPeriod) {
                             existingPG.currentPeriod = game.currentPeriod;
                             update = true;
                         }
                         
-                        let key = 'q' + existingPG.currentPeriod;
-                        if(existingPG.currentPeriod > 4) {
-                            key = 'o' + (existingPG.currentPeriod - 4);
+                        if(existingPG.total_points != nbaPlayer.pts) {
+                            existingPG.total_points = nbaPlayer.pts;
+                            existingPG.total_tpm = nbaPlayer.tpm;
+                            update = true;
                         }
-                        //TODO some math to figure out stats based on previous periods
-                        
+                                                    
+                        if(existingPG.currentPeriod == 1) {
+                            if(existingPG.q1_points != nbaPlayer.pts) {
+                                existingPG.q1_points = nbaPlayer.pts;
+                                existingPG.q1_tpm = nbaPlayer.tpm;
+                                update = true;
+                            }
+                        }
+                        else {
+                            //grab the current quarter
+                            let currentQ = 'q' + existingPG.currentPeriod;
+                            if(existingPG.currentPeriod > 4) {
+                                currentQ = 'o' + (existingPG.currentPeriod - 4);
+                            }
+                            
+                            //grab the previous quarter
+                            let previousQ = 'q' + existingPG.currentPeriod - 1;
+                            if(existingPG.currentPeriod > 5) {
+                                previousQ = 'o' + (existingPG.currentPeriod - 5);
+                            }
+                            
+                            //subtract from total
+                            const currentQPoints = nbaPlayer.pts - existingPG[previousQ + '_points'];
+                            const currentQTpm = nbaPlayer.tpm - existingPG[previousQ + '_tpm'];
+                            
+                            if(existingPG[currentQ + '_points'] != currentQPoints) {
+                                existingPG[currentQ + '_points'] = currentQPoints;
+                                existingPG[currentQ + '_tpm'] = currentQTpm;
+                                update = true;
+                            }
+                        }
                         
                         if(update) {
                             existingPG.save((err, task)=> {
