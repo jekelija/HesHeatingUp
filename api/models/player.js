@@ -14,18 +14,8 @@ const PlayerSchema = new Schema({
     },
     teamObjectID : {
         type: Schema.ObjectId,
+        ref: 'Team',
         required: 'Kindly enter the mongoose id of the team this player is on'
-    },
-    points: {
-        type: Number,
-        default: 0
-    },
-    status: {
-        type: [{
-            type: String,
-            enum: ['playing', 'not playing']
-        }],
-        default: ['not playing']
     }
 });
 

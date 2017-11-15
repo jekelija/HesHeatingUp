@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 const PlayerGameSchema = new Schema({
     gameID: {
         type: Schema.ObjectId,
-        ref: 'Team',
+        ref: 'Game',
         required: 'Kindly enter a game'
     },
     playerID: {
@@ -121,6 +121,13 @@ const PlayerGameSchema = new Schema({
     total_tpm: {
         type: Number,
         default: 0
+    },
+    status: {
+        type: [{
+            type: String,
+            enum: ['playing', 'not playing']
+        }],
+        default: ['not playing']
     }
 });
 

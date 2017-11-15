@@ -85,66 +85,68 @@ const logPlayerStats = (game, team)=> {
                     if(err) {
                         console.error('player/game find error: ' + err);
                     }
-                    else if(!existingPG) {
-                        //create a player game
-                        const newPG = new PlayerGame({
-                            playerID : player._id, 
-                            gameID: game._id
-                        });
-                        newPG.save((err, task)=> {
-                            if(err) {
-                                console.error('Error saving player game: ' + err);
-                            }
-                            else {
-                                console.error('Saved player game: ' + player.name);
-                            }
-                        });
-                    }
                     else {
-                        //need to compute stats
-                        let update = false;
-                        if(existingPG.currentPeriod != game.currentPeriod) {
-                            existingPG.currentPeriod = game.currentPeriod;
+                        let update = false;                        
+                        if(!existingPG) {
+                            //create a player game
+                            existingPG = new PlayerGame({
+                                playerID : player._id, 
+                                gameID: game._id
+                            });
                             update = true;
-                        }
-                        
-                        if(existingPG.total_points != nbaPlayer.pts) {
-                            existingPG.total_points = nbaPlayer.pts;
-                            existingPG.total_tpm = nbaPlayer.tpm;
-                            update = true;
-                        }
-                                                    
-                        if(existingPG.currentPeriod == 1) {
-                            if(existingPG.q1_points != nbaPlayer.pts) {
-                                existingPG.q1_points = nbaPlayer.pts;
-                                existingPG.q1_tpm = nbaPlayer.tpm;
-                                update = true;
-                            }
                         }
                         else {
-                            //grab the current quarter
-                            let currentQ = 'q' + existingPG.currentPeriod;
-                            if(existingPG.currentPeriod > 4) {
-                                currentQ = 'o' + (existingPG.currentPeriod - 4);
-                            }
-                            
-                            //grab the previous quarter
-                            let previousQ = 'q' + existingPG.currentPeriod - 1;
-                            if(existingPG.currentPeriod > 5) {
-                                previousQ = 'o' + (existingPG.currentPeriod - 5);
-                            }
-                            
-                            //subtract from total
-                            const currentQPoints = nbaPlayer.pts - existingPG[previousQ + '_points'];
-                            const currentQTpm = nbaPlayer.tpm - existingPG[previousQ + '_tpm'];
-                            
-                            if(existingPG[currentQ + '_points'] != currentQPoints) {
-                                existingPG[currentQ + '_points'] = currentQPoints;
-                                existingPG[currentQ + '_tpm'] = currentQTpm;
+                            if(nbaPlayer.court == 1 && existingPG.status == 'not playing') {
+                                existingPG.status = 'playing';
                                 update = true;
                             }
+                            else if(nbaPlayer.court == 0 && existingPG.status == 'playing') {
+                                existingPG.status = 'not playing';
+                                update = true;
+                            }
+                            
+                            if(existingPG.currentPeriod != game.currentPeriod) {
+                                existingPG.currentPeriod = game.currentPeriod;
+                                update = true;
+                            }
+
+                            if(existingPG.total_points != nbaPlayer.pts) {
+                                existingPG.total_points = nbaPlayer.pts;
+                                existingPG.total_tpm = nbaPlayer.tpm;
+                                update = true;
+                            }
+
+                            if(existingPG.currentPeriod == 1) {
+                                if(existingPG.q1_points != nbaPlayer.pts) {
+                                    existingPG.q1_points = nbaPlayer.pts;
+                                    existingPG.q1_tpm = nbaPlayer.tpm;
+                                    update = true;
+                                }
+                            }
+                            else {
+                                //grab the current quarter
+                                let currentQ = 'q' + existingPG.currentPeriod;
+                                if(existingPG.currentPeriod > 4) {
+                                    currentQ = 'o' + (existingPG.currentPeriod - 4);
+                                }
+
+                                //grab the previous quarter
+                                let previousQ = 'q' + existingPG.currentPeriod - 1;
+                                if(existingPG.currentPeriod > 5) {
+                                    previousQ = 'o' + (existingPG.currentPeriod - 5);
+                                }
+
+                                //subtract from total
+                                const currentQPoints = nbaPlayer.pts - existingPG[previousQ + '_points'];
+                                const currentQTpm = nbaPlayer.tpm - existingPG[previousQ + '_tpm'];
+
+                                if(existingPG[currentQ + '_points'] != currentQPoints) {
+                                    existingPG[currentQ + '_points'] = currentQPoints;
+                                    existingPG[currentQ + '_tpm'] = currentQTpm;
+                                    update = true;
+                                }
+                            }
                         }
-                        
                         if(update) {
                             existingPG.save((err, task)=> {
                                 if(err) {
@@ -155,6 +157,7 @@ const logPlayerStats = (game, team)=> {
                                 }
                             });
                         }
+                            
                     }
                 });
             }
