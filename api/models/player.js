@@ -9,6 +9,7 @@ const PlayerSchema = new Schema({
     },
     playerID: {
         type: String,
+        unique: true,
         required: 'Enter player id',
         tags: { type: [String], index: true }
     },

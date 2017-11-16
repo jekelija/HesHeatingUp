@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 const GameSchema = new Schema({
     gameID: {
         type: String,
+        unique: true,
         required : 'Game ID',
         tags: { type: [String], index: true }
     },

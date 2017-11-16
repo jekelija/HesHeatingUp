@@ -1,11 +1,48 @@
 'use strict';
-module.exports = function(app) {
-    const controller = require('../controllers/onFireController');
-    app.route('/updateTeams')
-    .post(controller.updateTeams);
-    app.route('/updateRosters')
-    .post(controller.updateRosters);
-    app.route('/updateGames')
-    .post(controller.updateGames)
-    .delete(controller.deleteGames);
-};
+const express = require('express');
+const controller = require('../controllers/onFireController');
+const passport = require('passport');
+const User = require('../models/user');
+const router = express.Router();
+
+//TODO make this section only hittable by admins
+router.post('/updateTeams', controller.updateTeams);
+router.post('/updateRosters', controller.updateRosters);
+router.post('/updateGames', controller.updateGames);
+router.delete('/updateGames', controller.deleteGames);
+//END ADMIN SECTION
+
+router.get('/', function (req, res) {
+    res.render('index', { user : req.user });
+});
+
+router.get('/register', function(req, res) {
+    res.render('register', { });
+});
+
+router.post('/register', function(req, res) {
+    User.register(new User({ username : req.body.username, email : req.body.email }), req.body.password, function(err, user) {
+        if (err) {
+            return res.render('register', { user : user });
+        }
+
+        passport.authenticate('local')(req, res, function () {
+            res.redirect('/');
+        });
+    });
+});
+
+router.get('/login', function(req, res) {
+    res.render('login', { user : req.user });
+});
+
+router.post('/login', passport.authenticate('local'), function(req, res) {
+    res.redirect('/');
+});
+
+router.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
+});
+
+module.exports = router;

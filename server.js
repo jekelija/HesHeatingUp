@@ -1,12 +1,17 @@
+const SESSION_SECRET = 'correct horse battery staple';
+
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 
 const League = require('./api/models/league');
 const Player = require('./api/models/player');
+const User = require('./api/models/user');
 const PlayerGame = require('./api/models/playerGame');
 const Game = require('./api/models/game');
 const controller = require('./api/controllers/onFireController');
@@ -15,10 +20,20 @@ const controller = require('./api/controllers/onFireController');
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/onFireDb'); 
 
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  // we're connected!
+db.once('open', function() {    
+    app.use(session({
+        secret: SESSION_SECRET,
+        resave: true, 
+        saveUninitialized: true,
+        store: new MongoStore({ mongooseConnection: db })
+    }));
+    app.use(passport.initialize());
+    app.use(passport.session());
 });
 
 function logErrors (err, req, res, next) {
@@ -44,32 +59,17 @@ app.use(logErrors);
 app.use(clientErrorHandler);
 app.use(errorHandler);
 
-var routes = require('./api/routes/onFireRoutes'); //importing route
-routes(app); //register the route
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+var routes = require('./api/routes/onFireRoutes');
+app.use('/', routes);
 
 app.listen(port);
 
 const request = require('request');
 
-//make sure NBA league is set up
-League.findOne({ leagueName: 'NBA'}, (err, league)=> {
-    if(err) {
-        console.error('league find error: ' + err);
-    }
-    else {
-        if(!league) {
-            const insert = new League();
-            insert.save(function(err, task) {
-                if (err) {
-                    console.error('error saving league');
-                }
-                else {
-                    console.log('saved league');
-                }
-            });
-        }
-    }
-});
 
 const logPlayerStats = (game, team)=> {
     for(let i = 0; i < team.pstsg.length; ++i) {
