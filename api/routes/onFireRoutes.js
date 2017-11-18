@@ -3,6 +3,7 @@ const express = require('express');
 const controller = require('../controllers/onFireController');
 const passport = require('passport');
 const User = require('../models/user');
+
 const router = express.Router();
 
 //TODO make this section only hittable by admins
@@ -20,17 +21,12 @@ router.get('/register', function(req, res) {
     res.render('register', { });
 });
 
-router.post('/register', function(req, res) {
-    User.register(new User({ username : req.body.username, email : req.body.email }), req.body.password, function(err, user) {
-        if (err) {
-            return res.render('register', { user : user });
-        }
+router.post('/register', passport.authenticate('local-signup', {
+    successRedirect : '/', // redirect to the secure profile section
+    failureRedirect : '/', // redirect back to the signup page if there is an error
+    failureFlash : true // allow flash messages
+}));
 
-        passport.authenticate('local')(req, res, function () {
-            res.redirect('/');
-        });
-    });
-});
 
 router.get('/login', function(req, res) {
     res.render('login', { user : req.user });

@@ -3,11 +3,23 @@ const SESSION_SECRET = 'correct horse battery staple';
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
+const path = require('path');
+const fs = require("fs");
+const cons = require('consolidate');
+
+const Handlebars = require("handlebars")
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'html');
+app.set("view options", { layout: true });
+app.engine('.html', cons.handlebars);
+app.use(express.static('public'));
 
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+const flash    = require('connect-flash');
 
 const League = require('./api/models/league');
 const Player = require('./api/models/player');
@@ -26,15 +38,18 @@ const MongoStore = require('connect-mongo')(session);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {    
-    app.use(session({
-        secret: SESSION_SECRET,
-        resave: true, 
-        saveUninitialized: true,
-        store: new MongoStore({ mongooseConnection: db })
-    }));
-    app.use(passport.initialize());
-    app.use(passport.session());
+    
 });
+
+app.use(session({
+    secret: SESSION_SECRET,
+    resave: true, 
+    saveUninitialized: true,
+    store: new MongoStore({ mongooseConnection: db })
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash()); // use connect-flash for flash messages stored in session
 
 function logErrors (err, req, res, next) {
   console.error(err.stack)
@@ -48,8 +63,7 @@ function clientErrorHandler (err, req, res, next) {
     }
 }
 function errorHandler (err, req, res, next) {
-    res.status(500);
-    res.send('error', { error: err });
+    res.status(500).send({ error: err });
 }
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -59,9 +73,7 @@ app.use(logErrors);
 app.use(clientErrorHandler);
 app.use(errorHandler);
 
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+require('./config/passport')(passport); // pass passport for configuration
 
 var routes = require('./api/routes/onFireRoutes');
 app.use('/', routes);

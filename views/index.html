@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>He's Heating Up a.k.a. The Unicorn Tracker</title>
+        <script src="js/index.js"></script>
+    </head>
+    <body>
+
+        {{#if data.user}}
+        <div>
+            {{data.user.username}}
+        </div>
+        {{else}}
+        <div>
+            <form class='generic-form' action="http://localhost:3000/login" method="POST" data-type="json" id="login-form">
+                Login
+                <div class="container">
+                    <label><b>Email</b></label>
+                    <input type="text" placeholder="Enter Email" name="email" required>
+
+                    <label><b>Password</b></label>
+                    <input type="password" placeholder="Enter Password" name="password" required>
+
+                    <button type="submit">Login</button>
+                    <input type="checkbox"> Remember me
+                </div>
+            </form>
+            
+            <form class='generic-form' action="http://localhost:3000/register" method="POST" data-type="json" id="register-form">
+                Register
+                <div class="container">
+                    <label><b>Email</b></label>
+                    <input type="text" placeholder="Enter Email" name="email" required>
+
+                    <label><b>Password</b></label>
+                    <input type="password" placeholder="Enter Password" name="password" required>                    
+                    <input data-form-ignore="true" type="password" placeholder="Re-type Password" name="reTypePassword" required>
+
+                    <button type="submit">Register</button>
+                </div>
+            </form>
+                
+        </div>
+        {{/if}}
+    </body>
+</html>
