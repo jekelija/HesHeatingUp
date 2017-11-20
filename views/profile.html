@@ -4,26 +4,16 @@
         <meta charset="UTF-8"/>
         <title>He's Heating Up a.k.a. The Unicorn Tracker</title>
         <script src="js/index.js"></script>
+        <script src="js/index.js"></script>
     </head>
     <body>
-
         {{#if user}}
         <div>
-            {{user.local.email}}
-            <div id="myPlayers">
-                
-            </div>
-            <div id="choosePlayers">
-                <form class='generic-form' action="http://localhost:3000/login" method="POST" data-type="json" id="login-form">
-                    <select id="chooseTeam" name="team">
-                    </select>
-                    <select id="choosePlayer" name="team">
-                    </select>
-                    <button type="submit">Select</button>
-                </form>
-            </div>
+            {{user.email}}
         </div>
         {{else}}
+        
+        {{/if}}
         <div>
             <form class='generic-form' action="http://localhost:3000/login" method="POST" data-type="json" id="login-form">
                 Login
@@ -54,6 +44,7 @@
             </form>
                 
         </div>
-        {{/if}}
     </body>
 </html>
+
+        

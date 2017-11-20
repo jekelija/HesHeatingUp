@@ -239,21 +239,19 @@ exports.updateTeams = function(req, res) {
     });  
 }
 
-exports.createGame = function(homeTeamName, awayTeamName) {
-    Team.findOne({ name: homeTeamName }, function (err, homeTeam) {
-        if(err) {
-            console.error(err);
-        }
-        else {
-            Team.findOne({ name: awayTeamName }, function (err, awayTeam) {
-                if(err) {
-                    console.error(err);
-                }
-                else {
-                    const game = new Game({ homeTeam: homeTeam, awayTeam: awayTeam });
-
-                }
-            });
-        }
+exports.addUserPlayer = function(user, playerID) {
+    const p = new Promise((resolve, reject) => {
+        user.players.push(playerID);
+        user.save(function(err, task) {
+            if (err) {
+                console.error('error saving user');
+                reject(err);
+            }
+            else {
+                console.log('user');
+                resolve();
+            }
+        });
     });
+    return p;
 };
